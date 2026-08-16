@@ -1,4 +1,4 @@
-# StudyFlow - Front-end
+# StudyFlow - Front-End
 
 
 
@@ -15,7 +15,6 @@ A proposta do projeto é oferecer uma plataforma simples e visual para organizar
 
 
 O objetivo do StudyFlow é proporcionar aos estudantes uma ferramenta que facilite a organização de suas atividades acadêmicas, permitindo acompanhar tarefas, prazos e o progresso das atividades de forma centralizada e intuitiva.
-
 
 
 ## 🛠️ Stack Tecnológica
