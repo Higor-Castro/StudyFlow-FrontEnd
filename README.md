@@ -1,16 +1,65 @@
-# React + Vite
+# StudyFlow - Front-End
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+O **StudyFlow** é uma aplicação web em desenvolvimento para auxiliar estudantes na organização e gerenciamento de suas rotinas de estudos.
 
-## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+A proposta do projeto é oferecer uma plataforma simples e visual para organizar disciplinas, tarefas, trabalhos, provas e prazos, utilizando uma abordagem inspirada em ferramentas de gerenciamento de tarefas.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+
+## 🎯 Objetivo
+
+
+
+O objetivo do StudyFlow é proporcionar aos estudantes uma ferramenta que facilite a organização de suas atividades acadêmicas, permitindo acompanhar tarefas, prazos e o progresso das atividades de forma centralizada e intuitiva.
+
+
+## 🛠️ Stack Tecnológica
+
+
+
+### Front-end
+
+
+
+- React
+
+- JavaScript
+
+- HTML5
+
+- CSS3
+
+
+
+### Ferramentas
+
+
+
+- Git
+
+- GitHub
+
+- GitHub Projects
+
+- NPM
+
+
+
+## 🏗️ Arquitetura
+
+
+
+O projeto utiliza uma arquitetura com **Front-end e Back-end separados**, comunicando-se por meio de uma **API REST**.
+
+
+
+Este repositório é responsável exclusivamente pelo desenvolvimento do **Front-end**, enquanto o Back-end será mantido em um repositório separado.
+
+## Desenvolvedores
+ - Higor de Castro Venancio da Silva
+ - João Vitor Rodrigues
+
