@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Login() {
   return (
     <div>
@@ -9,7 +11,7 @@ function Login() {
 
       <button>Entrar</button>
 
-      <p>Cliente não cadastrado? <a href="/register/register.jsx">Clique aqui</a></p>
+      <p>Cliente não cadastrado? <Link to="/register">Clique aqui</Link></p>
 
     </div>
   );

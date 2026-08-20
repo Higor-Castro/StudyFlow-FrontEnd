@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Register() {
   return (
     <div>
@@ -27,7 +29,7 @@ function Register() {
         <button type="submit">Cadastrar</button>
       </form>
 
-      <p>Já tem uma conta? <a href="/login/login.jsx">Faça login</a></p>
+      <p>Já tem uma conta? <Link to="/login">Faça login</Link></p>
     </div>
   );
 }
