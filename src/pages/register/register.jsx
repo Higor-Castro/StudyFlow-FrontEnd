@@ -28,7 +28,7 @@ function Register() {
     <div>
       <h1>Cadastro</h1>
       
-      <form>
+      <form onSubmit={handleSubmit}>
         <div>
             <label htmlFor="nome">Nome:</label>
             <input type="text" id="nome" placeholder="Digite o nome" value={username} onChange={(e) => setUsername(e.target.value)}/>
