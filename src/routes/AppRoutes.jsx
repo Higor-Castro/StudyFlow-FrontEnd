@@ -3,6 +3,7 @@ import {createBrowserRouter, Navigate} from "react-router-dom";
 import Login from "../pages/login/login"
 import Cadastro from "../pages/register/register"
 import TwoFA from "../pages/login/2fa/twoFA"
+import Home from "../pages/home/home"
 
 const router = createBrowserRouter([
     {
@@ -19,6 +20,9 @@ const router = createBrowserRouter([
     },{
         path: "/login/2fa",
         element: <TwoFA />
+    },{
+        path: "/home",
+        element: <h1>Home</h1>
     }
 ]);
 
