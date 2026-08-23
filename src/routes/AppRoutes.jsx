@@ -22,7 +22,7 @@ const router = createBrowserRouter([
         element: <TwoFA />
     },{
         path: "/home",
-        element: <h1>Home</h1>
+        element: <Home />
     }
 ]);
 
