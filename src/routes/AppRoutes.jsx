@@ -4,6 +4,7 @@ import Login from "../pages/login/login"
 import Cadastro from "../pages/register/register"
 import TwoFA from "../pages/login/2fa/twoFA"
 import Home from "../pages/home/home"
+import Profile from "../pages/profile/profile"
 
 const router = createBrowserRouter([
     {
@@ -23,6 +24,9 @@ const router = createBrowserRouter([
     },{
         path: "/home",
         element: <Home />
+    },{
+        path: "/profile",
+        element:<Profile />
     }
 ]);
 

@@ -17,7 +17,7 @@ function TwoFA() {
     e.preventDefault()
     setMensagem("")
 
-    const response = await fetch("http://localhost:8080/users/verify-2fa", {
+    const response = await fetch("http://localhost:8080/users/login/2fa", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, codigo }),
@@ -40,12 +40,7 @@ function TwoFA() {
       <p>Digite o código de 6 digitos enviado para o seu e-email.</p>
 
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Digite o código"
-          value={codigo}
-          onChange={(e) => setCodigo(e.target.value)}
-          maxLength={6}
+        <input type="text" placeholder="Digite o código" value={codigo} onChange={(e) => setCodigo(e.target.value)} maxLength={6}
         />
         <button type="submit">Confirmar código</button>
       </form>

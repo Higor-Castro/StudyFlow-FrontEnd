@@ -6,7 +6,6 @@ import Login from './pages/login/login'
 import router from './routes/AppRoutes'
 
 function App() {
-
   return <RouterProvider router={router} />
 }
 
