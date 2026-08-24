@@ -13,7 +13,7 @@ function Login() {
     const response = await fetch("http://localhost:8080/users/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({email, senha})
+      body: JSON.stringify({ email, senha })
     })
 
     const texto = await response.text()
@@ -28,26 +28,27 @@ function Login() {
 
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">E-mail:</label>
-          <input type="email" id="email" placeholder="Digite o e-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
-        </div>
+    <div className="page">
+      <div className="card">
+        <h1>Login</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="email">E-mail:</label>
+            <input type="email" id="email" placeholder="Digite o e-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
 
-        <div>
-          <label htmlFor="senha">Senha:</label>
-          <input type="password" id="senha" placeholder="Digite a senha" value={senha} onChange={(e) => setSenha(e.target.value)} />
-        </div>
+          <div className="form-group">
+            <label htmlFor="senha">Senha:</label>
+            <input type="password" id="senha" placeholder="Digite a senha" value={senha} onChange={(e) => setSenha(e.target.value)} />
+          </div>
 
-        <button type="submit">Entrar</button>
-      </form>
+          <button className="btn" type="submit">Entrar</button>
+        </form>
 
-      {mensagem && <p>{mensagem}</p>}
+        {mensagem && <p>{mensagem}</p>}
 
-      <p>Cliente não cadastrado? <Link to="/register">Clique aqui</Link></p>
-
+        <p className="texto-centro">Cliente não cadastrado? <Link to="/register">Clique aqui</Link></p>
+      </div>
     </div>
   );
 }

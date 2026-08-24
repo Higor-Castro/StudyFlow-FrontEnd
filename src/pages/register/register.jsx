@@ -9,10 +9,10 @@ function Register() {
   const [mensagem, setMensagem] = useState("")
   const navigate = useNavigate()
 
-  async function handleSubmit (e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    if (senha !== confirmarSenha){
+    if (senha !== confirmarSenha) {
       setMensagem("As senhas não são iguais")
       return
     }
@@ -42,36 +42,38 @@ function Register() {
   }
 
   return (
-    <div>
-      <h1>Cadastro</h1>
-      
-      <form onSubmit={handleSubmit}>
-        <div>
+    <div className="page">
+      <div className="card">
+        <h1>Cadastro</h1>
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
             <label htmlFor="nome">Nome:</label>
-            <input type="text" id="nome" placeholder="Digite o nome" value={username} onChange={(e) => setUsername(e.target.value)}/>
-        </div>
+            <input type="text" id="nome" placeholder="Digite o nome" value={username} onChange={(e) => setUsername(e.target.value)} />
+          </div>
 
-        <div>
+          <div className="form-group">
             <label htmlFor="email">E-mail:</label>
-            <input type="email" id="email" placeholder="Digite o e-mail" value={email} onChange={(e) => setEmail(e.target.value)}/>
-        </div>
+            <input type="email" id="email" placeholder="Digite o e-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
 
-        <div>
+          <div className="form-group">
             <label htmlFor="senha">Senha:</label>
-            <input type="password" id="senha" placeholder="Digite a senha" value={senha} onChange={(e) => setSenha(e.target.value)}/>
-        </div>
+            <input type="password" id="senha" placeholder="Digite a senha" value={senha} onChange={(e) => setSenha(e.target.value)} />
+          </div>
 
-        <div>
+          <div className="form-group">
             <label htmlFor="confirmarSenha">Confirmar Senha:</label>
-            <input type="password" id="confirmarSenha" placeholder="Confirme a senha" value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)}/>
-        </div>
+            <input type="password" id="confirmarSenha" placeholder="Confirme a senha" value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} />
+          </div>
 
-        <button type="submit">Cadastrar</button>
-      </form>
+          <button className="btn" type="submit">Cadastrar</button>
+        </form>
 
-      {mensagem && <p>{mensagem}</p>}
+        {mensagem && <p>{mensagem}</p>}
 
-      <p>Já tem uma conta? <Link to="/login">Faça login</Link></p>
+        <p className="texto-centro">Já tem uma conta? <Link to="/login">Faça login</Link></p>
+      </div>
     </div>
   );
 }

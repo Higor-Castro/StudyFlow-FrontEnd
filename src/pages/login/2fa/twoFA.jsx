@@ -34,17 +34,20 @@ function TwoFA() {
   }
 
   return (
-    <div>
-      <h1>Verficação de duas Etapas</h1>
+    <div className="page">
+      <div className="card">
+        <h1>Verficação de duas Etapas</h1>
 
-      <p>Digite o código de 6 digitos enviado para o seu e-email.</p>
+        <p className="texto-centro">Digite o código de 6 digitos enviado para o seu e-email.</p>
 
-      <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Digite o código" value={codigo} onChange={(e) => setCodigo(e.target.value)} maxLength={6}
-        />
-        <button type="submit">Confirmar código</button>
-      </form>
-      {mensagem && <p>{mensagem}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <input type="text" placeholder="Digite o código" value={codigo} onChange={(e) => setCodigo(e.target.value)} maxLength={6} />
+          </div>
+          <button className="btn" type="submit">Confirmar código</button>
+        </form>
+        {mensagem && <p>{mensagem}</p>}
+      </div>
     </div>
   );
 }
