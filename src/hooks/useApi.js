@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+const BASE_URL = import.meta.env.VITE_API_URL
 
 function useApi() {
   const [loading, setLoading] = useState(false)
@@ -22,12 +22,10 @@ function useApi() {
       return response.data;
     } catch (err) {
       const mensagemErro =
-        typeof err.response?.data === "string"
-          ? err.response.data
-          : err.response?.data?.mensagem || "Erro na requisição"
+        err.response?.data?.message || "Erro na requisição";
 
       setError(mensagemErro);
-      throw new Error(mensagemErro, { cause: err })
+      throw new Error(mensagemErro);
     } finally {
       setLoading(false)
     }
