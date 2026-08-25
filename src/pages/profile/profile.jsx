@@ -4,9 +4,9 @@ function Profile(){
             <h1>Perfil</h1>
 
             <p>Nome:</p>
-            <p>Email:</p>
+            <p>E-mail:</p>
 
-            <button>Redefinir Sen</button>
+            <button>Redefinir Senha</button>
             <button>Exportar informações</button>
             <button>Excluir conta</button>
         </div>
