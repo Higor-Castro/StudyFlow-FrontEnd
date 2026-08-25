@@ -17,7 +17,6 @@ function useApi() {
         url: `${BASE_URL}${endpoint}`,
         method: options.method || "GET",
         data: options.body,
-        withCredentials: true,
       });
 
       return response.data;
