@@ -79,3 +79,37 @@ button {
   text-align: center;
   margin-top: 20px;
 }
+
+.twofa-botoes {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-voltar {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.btn-voltar:hover {
+  background-color: #d1d5db;
+}
+
+.header {
+  height: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  background-color: white;
+  color: #222;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.home-content {
+  text-align: center;
+  margin-top: 50px;
+  padding: 40px;
+}

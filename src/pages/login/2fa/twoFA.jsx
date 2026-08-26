@@ -37,7 +37,7 @@ function TwoFA() {
         <h1>Verficação de duas Etapas</h1>
 
         <p className="texto-centro">
-          Digite o código de 6 digitos enviado para o seu e-mail.
+          Digite o código de 6 digitos enviado para e-mail cadastrado. <strong>Pode chegar como Spam.</strong>
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -50,9 +50,15 @@ function TwoFA() {
               maxLength={6}
             />
           </div>
-          <button className="btn" type="submit">
-            Confirmar código
-          </button>
+          <div className="twofa-botoes">
+            <button className="btn btn-voltar" type="button" onClick={() => navigate("/login")}>
+              Voltar
+            </button>
+
+            <button className="btn" type="submit">
+              Confirmar código
+            </button>
+          </div>
         </form>
         {mensagem && <p>{mensagem}</p>}
       </div>
