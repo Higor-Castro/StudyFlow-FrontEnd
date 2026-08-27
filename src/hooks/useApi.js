@@ -3,6 +3,9 @@ import { useState, useCallback } from "react";
 // Importa o Axios, responsável por fazer requisições para a API
 import axios from "axios";
 
+import { getToken, removeToken } from "../utils/auth";
+
+
 // Pega a URL base da API definida no arquivo .env
 const BASE_URL = import.meta.env.VITE_API_URL
 
@@ -24,19 +27,23 @@ function useApi() {
       // Configura a requisição:
       // Junta a URL base com o endpoint recebido
       // Define o método HTTP caso nenhum seja informado utiliza GET
-      // Envia os dados presentes em options.body
+      const token = getToken();
       const response = await axios({
         url: `${BASE_URL}${endpoint}`,
         method: options.method || "GET",
         data: options.body,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-
       // Retorna somente os dados recebidos da API
       return response.data;
     } catch (err) {
+      // Se da erro, volta para tela de login
+      if (err.response?.status === 401) {
+        removeToken();
+        window.location.href = "/login";
+      }
       // Tenta pegar a mensagem de erro enviada pelo backend caso não exista, utiliza uma mensagem padrão
       const mensagemErro = err.response?.data?.message || "Erro na requisição";
-
       // Salva a mensagem de erro no estado
       setError(mensagemErro);
       // Lança o erro novamente para que quem chamou a função
@@ -46,10 +53,8 @@ function useApi() {
       setLoading(false)
     }
   }, [])
-
   // Disponibiliza a função request, o estado de carregamento e possíveis erros
   return { request, loading, error };
 }
-
 // Exporta o hook para ser utilizado em outros arquivos
 export default useApi;

@@ -1,6 +1,8 @@
 // Importa recursos de navegação do React Router
 import { useLocation, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
+// Importa a função para salvar o token JWT
+import { saveToken } from "../../../utils/auth";
 // Importa o hook responsável pelas requisições para a API
 import useApi from "../../../hooks/useApi";
 
@@ -33,12 +35,14 @@ function TwoFA() {
     setMensagem("");
 
     try {
-      // Envia o e-mail e o código para a API validar o 2FA
-      await request("/users/login/2fa", {
+      // Faz a requisição para validar o código de verificação
+      const resposta = await request("/users/login/2fa", {
         method: "POST",
         body: { email, codigo },
       });
-      // Se a validação der certo, redireciona para a Home
+      // Salva o token JWT retornado pela API
+      saveToken(resposta.token);
+      // Redireciona o usuário para a página inicial
       navigate("/home");
     } catch (err) {
       // Caso aconteça algum erro, exibe a mensagem

@@ -6,6 +6,8 @@ import Cadastro from "../pages/register/register"
 import TwoFA from "../pages/login/2fa/twoFA"
 import Home from "../pages/home/home"
 import Profile from "../pages/profile/profile"
+// Importa o componente PrivateRoute para proteger as rotas privadas
+import PrivateRoute from "./PrivateRoute"
 
 // Cria as rotas da aplicação
 const router = createBrowserRouter([
@@ -31,11 +33,11 @@ const router = createBrowserRouter([
     },{
         // Rota da página inicial
         path: "/home",
-        element: <Home />
+        element: <PrivateRoute><Home /></PrivateRoute>
     },{
         // Rota da página de perfil
         path: "/profile",
-        element:<Profile />
+        element:<PrivateRoute><Profile /></PrivateRoute>
     }
 ]);
 
