@@ -4,7 +4,7 @@ import {createBrowserRouter, Navigate} from "react-router-dom";
 import Login from "../pages/login/login"
 import Cadastro from "../pages/register/register"
 import TwoFA from "../pages/login/2fa/twoFA"
-import Home from "../pages/Home/home"
+import Home from "../pages/home/home"
 import Profile from "../pages/profile/profile"
 // Importa o componente PrivateRoute para proteger as rotas privadas
 import PrivateRoute from "./PrivateRoute"
