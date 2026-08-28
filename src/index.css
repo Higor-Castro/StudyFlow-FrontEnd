@@ -121,3 +121,8 @@ button {
 .btn-sair:hover {
   background-color: #b91c1c;
 }
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

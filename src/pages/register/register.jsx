@@ -20,7 +20,7 @@ function Register() {
   // Permite redirecionar o usuário para outra página
   const navigate = useNavigate();
   // Pega a função de requisição do hook useApi
-  const { request } = useApi()
+  const { request, loading } = useApi()
 
   // Função executada quando o formulário é enviado
   async function handleSubmit(e) {
@@ -112,8 +112,8 @@ function Register() {
             />
           </div>
           {/* Envia o formulário de cadastro */}
-          <button className="btn" type="submit">
-            Cadastrar
+          <button className="btn" type="submit" disabled={loading}>
+            {loading ? "Cadastrando..." : "Cadastrar"}
           </button>
         </form>
 

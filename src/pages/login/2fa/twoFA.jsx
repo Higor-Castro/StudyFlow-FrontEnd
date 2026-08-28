@@ -20,7 +20,7 @@ function TwoFA() {
   // Guarda mensagens de erro
   const [mensagem, setMensagem] = useState("");
   // Pega a função de requisição do hook useApi
-  const { request } = useApi();
+  const { request, loading } = useApi();
 
   // Se não existir um e-mail, retorna o usuário para a tela de login
   if (!email) {
@@ -83,8 +83,8 @@ function TwoFA() {
               Voltar
             </button>
             {/* Envia o código para validação */}
-            <button className="btn" type="submit">
-              Confirmar código
+            <button className="btn" type="submit" disabled={loading}>
+              {loading ? "Validando..." : "Confirmar código"}
             </button>
           </div>
         </form>

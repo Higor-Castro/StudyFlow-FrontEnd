@@ -16,7 +16,7 @@ function Login() {
   // Permite redirecionar o usuário para outra página
   const navigate = useNavigate();
   // Pega a função de requisição do hook useApi
-  const { request } = useApi();
+  const { request, loading } = useApi();
 
   // Função executada quando o formulário é enviado
   async function handleSubmit(e) {
@@ -68,8 +68,8 @@ function Login() {
           </div>
 
           {/* Envia o formulário */}
-          <button className="btn" type="submit">
-            Entrar
+          <button className="btn" type="submit" disabled={loading}>
+            {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
         {/* Exibe uma mensagem caso exista */}
