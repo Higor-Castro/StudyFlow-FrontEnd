@@ -113,3 +113,11 @@ button {
   margin-top: 50px;
   padding: 40px;
 }
+
+.btn-sair {
+  background-color: #dc2626;
+}
+
+.btn-sair:hover {
+  background-color: #b91c1c;
+}

@@ -17,7 +17,7 @@ export function removeToken() {
   sessionStorage.removeItem(TOKEN_KEY);
 }
 
-// true se existe token salvo E ele ainda é válido
+// verifica se existe 
 export function isAuthenticated() {
   return !!getToken();
 }
