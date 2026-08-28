@@ -43,7 +43,12 @@ function useApi() {
         window.location.href = "/login";
       }
       // Tenta pegar a mensagem de erro enviada pelo backend caso não exista, utiliza uma mensagem padrão
-      const mensagemErro = err.response?.data?.message || "Erro na requisição";
+      let mensagemErro = err.response?.data?.message || "Erro na requisição";
+
+      if (typeof mensagemErro === "object" && mensagemErro !== null) {
+        mensagemErro = Object.values(mensagemErro).join(", ");
+      }
+
       // Salva a mensagem de erro no estado
       setError(mensagemErro);
       // Lança o erro novamente para que quem chamou a função

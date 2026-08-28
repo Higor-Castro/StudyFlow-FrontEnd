@@ -34,6 +34,11 @@ function TwoFA() {
     // Limpa mensagens anteriores
     setMensagem("");
 
+    if (codigo.length !== 6) {
+      setMensagem("O código precisa ter exatamente 6 dígitos");
+      return;
+    }
+
     try {
       // Faz a requisição para validar o código de verificação
       const resposta = await request("/users/login/2fa", {
