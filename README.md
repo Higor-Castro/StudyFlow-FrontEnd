@@ -59,6 +59,10 @@ O projeto utiliza uma arquitetura com **Front-end e Back-end separados**, comuni
 
 Este repositório é responsável exclusivamente pelo desenvolvimento do **Front-end**, enquanto o Back-end será mantido em um repositório separado.
 
+
+
+[Back-end do projeto](https://github.com/Higor-Castro/StudyFlow-backEnd)
+
 ## Desenvolvedores
  - Higor de Castro Venancio da Silva
  - João Vitor Rodrigues
