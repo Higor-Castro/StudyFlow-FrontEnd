@@ -16,8 +16,3 @@ export function getToken() {
 export function removeToken() {
   sessionStorage.removeItem(TOKEN_KEY);
 }
-
-// verifica se existe 
-export function isAuthenticated() {
-  return !!getToken();
-}

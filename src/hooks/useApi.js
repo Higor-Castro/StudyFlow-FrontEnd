@@ -37,9 +37,10 @@ function useApi() {
       // Retorna somente os dados recebidos da API
       return response.data;
     } catch (err) {
-      // Se da erro, volta para tela de login
+      // Se da erro, volta para tela de login, invalidação de sessão
       if (err.response?.status === 401) {
         removeToken();
+        alert("Sua sessão expirou. Faça login novamente.");
         window.location.href = "/login";
       }
       // Tenta pegar a mensagem de erro enviada pelo backend caso não exista, utiliza uma mensagem padrão
@@ -52,7 +53,7 @@ function useApi() {
       // Salva a mensagem de erro no estado
       setError(mensagemErro);
       // Lança o erro novamente para que quem chamou a função
-      throw new Error(mensagemErro);
+      throw new Error(mensagemErro, { cause: err });
     } finally {
       // É executado independente da requisição dar certo ou errado
       setLoading(false)

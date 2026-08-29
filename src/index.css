@@ -26,7 +26,7 @@ button {
 }
 
 .card{
-  background-color: white;
+  background-color: rgb(235, 254, 255);
   width: 100%;
   max-width: 420px;
   padding: 30px;
@@ -71,7 +71,7 @@ button {
 }
 
 .mensagem {
-  mergin-top: 15px;
+  margin-top: 15px;
   text-align: center;
 }
 
