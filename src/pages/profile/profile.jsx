@@ -4,7 +4,7 @@ import useApi from "../../hooks/useApi";
 
 function Profile() {
   const navigate = useNavigate();
-  const { request } = useApi();
+  const { request, loading } = useApi();
 
   const handleLogout = async () => {
     try {
@@ -35,7 +35,7 @@ function Profile() {
         <br />
         <button className="btn" type="button" onClick={() => navigate("/home")}> Voltar para home </button>
         <br /><br />
-        <button className="btn btn-sair" type="button" onClick={handleLogout}>Sair</button>
+        <button className="btn btn-sair" type="button" onClick={handleLogout} disabled={loading} >{loading ? "Saindo..." : "Sair"}</button>
       </div>
     </div>
   );
