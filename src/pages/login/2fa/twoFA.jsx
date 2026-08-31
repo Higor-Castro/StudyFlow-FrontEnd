@@ -77,7 +77,7 @@ function TwoFA() {
               maxLength={6}
             />
           </div>
-          <div className="twofa-botoes">
+          <div className="two-btn">
             {/* Volta para a tela de login */}
             <button className="btn btn-voltar" type="button" onClick={() => navigate("/login")}>
               Voltar

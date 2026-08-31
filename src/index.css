@@ -80,7 +80,7 @@ button {
   margin-top: 20px;
 }
 
-.twofa-botoes {
+.two-btn {
   display: flex;
   gap: 15px;
 }

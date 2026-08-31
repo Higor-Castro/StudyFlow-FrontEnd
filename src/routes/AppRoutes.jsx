@@ -6,6 +6,9 @@ import Cadastro from "../pages/register/register"
 import TwoFA from "../pages/login/2fa/twoFA"
 import Home from "../pages/home/home"
 import Profile from "../pages/profile/profile"
+import RequestReset from "../pages/login/forgotPassword/RequestReset";
+import ConfirmToken from "../pages/login/forgotPassword/ConfirmToken";
+
 // Importa o componente PrivateRoute para proteger as rotas privadas
 import PrivateRoute from "./PrivateRoute"
 
@@ -38,7 +41,17 @@ const router = createBrowserRouter([
         // Rota da página de perfil
         path: "/profile",
         element:<PrivateRoute><Profile /></PrivateRoute>
+    },{
+        // Rota da página de solicitação de recuperação de senha
+        path: "/forgotPassword",
+        element: <RequestReset />
+    },{
+        // Rota da página de confirmação do token
+        path: "/forgotPassword/token",
+        element: <ConfirmToken />
     }
+
+
 ]);
 
 // Exporta as rotas para serem utilizadas na aplicação
