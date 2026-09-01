@@ -1,6 +1,6 @@
 // Imports da pagina
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 function RequestReset() {
   // Guarda o e-mail digitado pelo usuário
@@ -13,7 +13,7 @@ function RequestReset() {
     // Evita que a página seja recarregada
     e.preventDefault();
     // Aguardando o backend
-    navigate("/forgotPassword/token");
+    navigate("/forgotPassword/token", { state: { email } });
   }
 
   return (

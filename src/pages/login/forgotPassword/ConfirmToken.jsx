@@ -1,26 +1,41 @@
 // Imports da Pagina
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate, useLocation } from "react-router-dom";
 
 function ConfirmToken() {
   // Guarda o token digitado pelo usuário
   const [token, setToken] = useState("");
   // Permite redirecionar o usuário para outra página
   const navigate = useNavigate();
+  // Permite acessar informações enviadas pela página anterior
+  const location = useLocation();
+  // Recuperar o e-mail enviado da página anterior
+  const email = location.state?.email;
+
+  if (!email) {
+    // Se não existir um e-mail, retorna o usuário para a tela anterior
+    return <Navigate to="/forgotPassword" />;
+  }
 
   async function handleSubmit(e) {
     // Evita que a página seja recarregada
     e.preventDefault();
     // Aguardando o backend
-    navigate("/forgotPassword/reset");
+    // retorna caso o código não tenha 6 dígitos
+    if (token.length !== 6) {
+      // setMensagem("O código precisa ter exatamente 6 dígitos");
+      return;
+    }
+
+    navigate("/forgotPassword/reset", { state: { email, token } });
   }
   return (
     <div className="page">
       <div className="card">
         <h1>Confirme o Código</h1>
         <p className="texto-centro">
-          Digite o código enviado para o e-mail cadastrado.{" "}
-          <strong>Pode chegar como Spam.</strong>
+          Digite o código de 6 digitos enviado para e-mail cadastrado.
+          <strong> Pode chegar como Spam.</strong>
         </p>
         {/* Formulário de validação do token */}
         <form onSubmit={handleSubmit}>
@@ -32,6 +47,7 @@ function ConfirmToken() {
               placeholder="Digite o código"
               value={token}
               onChange={(e) => setToken(e.target.value)}
+              maxLength={6}
             />
           </div>
           <div className="two-btn">

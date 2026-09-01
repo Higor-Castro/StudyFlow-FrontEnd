@@ -22,7 +22,7 @@ function TwoFA() {
   // Pega a função de requisição do hook useApi
   const { request, loading } = useApi();
 
-  // Se não existir um e-mail, retorna o usuário para a tela de login
+  // Se não existir um e-mail, retorna o usuário para a tela anterior
   if (!email) {
     return <Navigate to="/login" />;
   }
@@ -33,7 +33,7 @@ function TwoFA() {
     e.preventDefault();
     // Limpa mensagens anteriores
     setMensagem("");
-
+    // retorna caso o código não tenha 6 dígitos
     if (codigo.length !== 6) {
       setMensagem("O código precisa ter exatamente 6 dígitos");
       return;

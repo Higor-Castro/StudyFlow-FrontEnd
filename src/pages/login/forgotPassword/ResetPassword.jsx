@@ -3,21 +3,31 @@ import { useState } from "react";
 import { useNavigate, useLocation, Navigate } from "react-router-dom";
 
 function ResetPassword() {
-    // Permite acessar informações enviadas pela página anterior
-    const location = useLocation();
     // Permite redirecionar o usuário para outra página
     const navigate = useNavigate();
-
     // Guarda a nova senha digitada pelo usuário
     const [novaSenha, setNovaSenha] = useState("");
     // Guarda a confirmação da nova senha
     const [confirmarSenha, setConfirmarSenha] = useState("");
+
+    // Permite acessar informações enviadas pela página anterior
+    const location = useLocation();
+    const email = location.state?.email;
+    const token = location.state?.token;
+
+    if (!email || !token) {
+        // Se não existir um e-mail ou token, retorna o usuário para a tela anterior
+        return <Navigate to="/forgotPassword" />;
+    }
 
     async function handleSubmit(e) {
         // Evita que a página seja recarregada
         e.preventDefault();
         // Aguardando o backend
         // Redireciona para a página de login após redefinir a senha
+        if (novaSenha !== confirmarSenha) {
+            return;
+        }
         navigate("/login");
     }
 
@@ -54,7 +64,7 @@ function ResetPassword() {
                     </div>
                     <div className="two-btn">
                         {/* Botão para voltar para a tela do token */}
-                        <button className="btn btn-voltar" type="button" onClick={() => navigate("/forgotPassword/token")}>
+                        <button className="btn btn-voltar" type="button" onClick={() => navigate("/forgotPassword")}>
                             Voltar
                         </button>
                         {/* Botão para confirmar a nova senha */}
