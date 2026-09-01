@@ -13,6 +13,7 @@ function RequestReset() {
     // Evita que a página seja recarregada
     e.preventDefault();
     // Aguardando o backend
+    navigate("/forgotPassword/token");
   }
 
   return (

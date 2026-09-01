@@ -8,6 +8,7 @@ import Home from "../pages/home/home"
 import Profile from "../pages/profile/profile"
 import RequestReset from "../pages/login/forgotPassword/RequestReset";
 import ConfirmToken from "../pages/login/forgotPassword/ConfirmToken";
+import ResetPassword from "../pages/login/forgotPassword/ResetPassword";
 
 // Importa o componente PrivateRoute para proteger as rotas privadas
 import PrivateRoute from "./PrivateRoute"
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
         // Rota da página de confirmação do token
         path: "/forgotPassword/token",
         element: <ConfirmToken />
+    },{
+        // Rota da página de redefinição de senha
+        path: "/forgotPassword/reset",
+        element: <ResetPassword />
     }
 
 

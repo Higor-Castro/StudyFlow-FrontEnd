@@ -12,6 +12,7 @@ function ConfirmToken() {
     // Evita que a página seja recarregada
     e.preventDefault();
     // Aguardando o backend
+    navigate("/forgotPassword/reset");
   }
   return (
     <div className="page">
