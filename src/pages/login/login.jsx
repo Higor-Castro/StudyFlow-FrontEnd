@@ -28,7 +28,6 @@ function Login() {
     try {
       // Envia o e-mail e a senha para a API realizar o login
       await request("/users/login", { method: "POST", body: { email, senha } });
-
       // Se o login estiver correto, redireciona para a página de 2FA e também envia o e-mail para a próxima página
       navigate("/login/2fa", { state: { email } });
     } catch (err) {
@@ -52,6 +51,7 @@ function Login() {
               placeholder="Digite o e-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="current-password"
             />
           </div>
 

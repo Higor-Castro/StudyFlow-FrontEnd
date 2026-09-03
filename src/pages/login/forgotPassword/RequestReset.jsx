@@ -1,19 +1,34 @@
 // Imports da pagina
 import { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
+import useApi from "../../../hooks/useApi";
 
 function RequestReset() {
   // Guarda o e-mail digitado pelo usuário
   const [email, setEmail] = useState("");
   // Permite redirecionar o usuário para outra página
   const navigate = useNavigate();
+  // Guarda mensagens de erro
+  const [mensagem, setMensagem] = useState("");
+  // Pega a função de requisição do hook useApi
+  const { request, loading } = useApi();
 
   // Função executada quando o formulário é enviado
   async function handleSubmit(e) {
     // Evita que a página seja recarregada
     e.preventDefault();
-    // Aguardando o backend
-    navigate("/forgotPassword/token", { state: { email } });
+    // Limpa mensagens anteriores
+    setMensagem("");
+
+    try {
+      // Envia o e-mail para realizar o enviou do token
+      await request("/users/senha/recuperar", { method: "POST", body: { email } });
+      // Redireciona para a página de token
+      navigate("/forgotPassword/token", { state: { email } });
+    } catch (err) {
+      // Caso aconteça algum erro, exibe a mensagem
+      setMensagem(err.message);
+    }
   }
 
   return (
@@ -43,9 +58,13 @@ function RequestReset() {
             <button className="btn btn-voltar" type="button" onClick={() => navigate("/login")}>
               Voltar
             </button>
-            <button className="btn" type="submit">Enviar</button>
+            <button className="btn" type="submit" disabled={loading}>
+              {loading ? "Enviando..." : "Enviar"}
+            </button>
           </div>
         </form>
+        {/* Exibe a mensagem de erro caso exista */}
+        {mensagem && <p>{mensagem}</p>}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 // Imports da Pagina
 import { useState } from "react";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
+import useApi from "../../../hooks/useApi";
 
 function ConfirmToken() {
   // Guarda o token digitado pelo usuário
@@ -11,6 +12,10 @@ function ConfirmToken() {
   const location = useLocation();
   // Recuperar o e-mail enviado da página anterior
   const email = location.state?.email;
+  // Guarda mensagens de erro
+  const [mensagem, setMensagem] = useState("");
+  // Pega a função de requisição do hook useApi
+  const { request, loading } = useApi();
 
   if (!email) {
     // Se não existir um e-mail, retorna o usuário para a tela anterior
@@ -20,14 +25,26 @@ function ConfirmToken() {
   async function handleSubmit(e) {
     // Evita que a página seja recarregada
     e.preventDefault();
-    // Aguardando o backend
+    // Limpa mensagens anteriores
+    setMensagem("");
     // retorna caso o código não tenha 6 dígitos
     if (token.length !== 6) {
-      // setMensagem("O código precisa ter exatamente 6 dígitos");
+      setMensagem("O código precisa ter exatamente 6 dígitos");
       return;
     }
 
-    navigate("/forgotPassword/reset", { state: { email, token } });
+    try {
+      // Envia o e-mail para realizar o enviou do token
+      await request("/users/senha/validar", {
+        method: "POST",
+        body: { email, token }
+      });
+      // Redireciona para a página de token
+      navigate("/forgotPassword/reset", { state: { email, token } });
+    } catch (err) {
+      // Caso aconteça algum erro, exibe a mensagem
+      setMensagem(err.message);
+    }
   }
   return (
     <div className="page">
@@ -57,11 +74,13 @@ function ConfirmToken() {
               Voltar
             </button>
             {/* Botão para ir para o reset da senha */}
-            <button className="btn" type="submit">
-              Confirmar
+            <button className="btn" type="submit" disabled={loading}>
+              {loading ? "Validando..." : "Confirmar"}
             </button>
           </div>
         </form>
+        {/* Exibe a mensagem de erro caso exista */}
+        {mensagem && <p>{mensagem}</p>}
       </div>
     </div>
   );

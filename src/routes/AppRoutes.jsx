@@ -1,5 +1,5 @@
 // Importa o createBrowserRouter para criar as rotas da aplicação e Navigate para redirecionar
-import {createBrowserRouter, Navigate} from "react-router-dom";
+import {createBrowserRouter} from "react-router-dom";
 // Importa as páginas que serão utilizadas nas rotas
 import Login from "../pages/login/login"
 import Cadastro from "../pages/register/register"
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
     // Rota inicial da aplicação
     path: "/",
     // Redireciona automaticamente para a página de login
-    element: <Navigate to="/login" replace />,
+    element: <Login />,
     },
     {
         // Rota da página de login
