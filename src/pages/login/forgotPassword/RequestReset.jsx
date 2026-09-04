@@ -22,7 +22,10 @@ function RequestReset() {
 
     try {
       // Envia o e-mail para realizar o enviou do token
-      await request("/users/senha/recuperar", { method: "POST", body: { email } });
+      await request("/users/senha/recuperar", { 
+        method: "POST", 
+        body: { email } 
+      });
       // Redireciona para a página de token
       navigate("/forgotPassword/token", { state: { email } });
     } catch (err) {

@@ -1,14 +1,19 @@
 // Imports da Pagina
 import { useState } from "react";
 import { useNavigate, useLocation, Navigate } from "react-router-dom";
+import useApi from "../../../hooks/useApi";
 
 function ResetPassword() {
     // Permite redirecionar o usuário para outra página
     const navigate = useNavigate();
     // Guarda a nova senha digitada pelo usuário
-    const [novaSenha, setNovaSenha] = useState("");
+    const [senha, setSenha] = useState("");
     // Guarda a confirmação da nova senha
-    const [confirmarSenha, setConfirmarSenha] = useState("");
+    const [senhaComparar, setSenhaComparar] = useState("");
+    // Guarda mensagens de erro
+    const [mensagem, setMensagem] = useState("");
+    // Pega a função de requisição do hook useApi
+    const { request, loading } = useApi();
 
     // Permite acessar informações enviadas pela página anterior
     const location = useLocation();
@@ -23,12 +28,23 @@ function ResetPassword() {
     async function handleSubmit(e) {
         // Evita que a página seja recarregada
         e.preventDefault();
-        // Aguardando o backend
-        // Redireciona para a página de login após redefinir a senha
-        if (novaSenha !== confirmarSenha) {
+        setMensagem("");
+
+        if (senha !== senhaComparar) {
+            setMensagem("As senhas não coincidem.");
             return;
         }
-        navigate("/login");
+
+        try {
+            await request("/users/senha/redefinir", {
+                method: "POST",
+                body: { email, token, senha, senhaComparar },
+            });
+            // Redireciona para a página de login após redefinir a senha
+            navigate("/login");
+        } catch (err) {
+            setMensagem(err.message);
+        }
     }
 
     return (
@@ -42,24 +58,24 @@ function ResetPassword() {
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         {/* Campo para digitar a nova senha */}
-                        <label htmlFor="novaSenha">Nova senha:</label>
+                        <label htmlFor="senha">Nova senha:</label>
                         <input
                             type="password"
-                            id="novaSenha"
+                            id="senha"
                             placeholder="Digite a nova senha"
-                            value={novaSenha}
-                            onChange={(e) => setNovaSenha(e.target.value)}
+                            value={senha}
+                            onChange={(e) => setSenha(e.target.value)}
                         />
                     </div>
                     <div className="form-group">
                         {/* Campo para confirmar a nova senha */}
-                        <label htmlFor="confirmarSenha">Confirmar senha:</label>
+                        <label htmlFor="senhaComparar">Confirmar senha:</label>
                         <input
                             type="password"
-                            id="confirmarSenha"
+                            id="senhaComparar"
                             placeholder="Confirme a nova senha"
-                            value={confirmarSenha}
-                            onChange={(e) => setConfirmarSenha(e.target.value)}
+                            value={senhaComparar}
+                            onChange={(e) => setSenhaComparar(e.target.value)}
                         />
                     </div>
                     <div className="two-btn">
@@ -68,11 +84,13 @@ function ResetPassword() {
                             Voltar
                         </button>
                         {/* Botão para confirmar a nova senha */}
-                        <button className="btn" type="submit">
-                            Redefinir
+                        <button className="btn" type="submit" disabled={loading}>
+                            {loading ? "Redefinindo..." : "Redefinir"}
                         </button>
                     </div>
                 </form>
+                {/* Exibe a mensagem de erro caso exista */}
+                {mensagem && <p>{mensagem}</p>}
             </div>
         </div>
     );

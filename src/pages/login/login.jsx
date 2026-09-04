@@ -79,6 +79,9 @@ function Login() {
         <p className="texto-centro">
           Cliente não cadastrado? <Link to="/register">Clique aqui</Link>
         </p>
+        <p className="texto-centro">
+          <Link to="/forgotPassword">Esqueceu a senha?</Link>
+        </p>
       </div>
     </div>
   );
