@@ -1,33 +1,43 @@
-// Importa recursos de navegação do React Router
-import { Link, useNavigate } from "react-router-dom";
+// Importa recursos de navegação do React Router e useLocation para poder passar a informação
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
-
-// Importa o hook responsável pelas requisições para a API
-import useApi from "../../hooks/useApi";
 
 // Cria o componente da página de Cadastro
 function Register() {
+  const location = useLocation();
+  // Caso a pessoa clique em voltar na tela do termo
+  const dadosAnteriores = location.state
+
   // Guarda o nome digitado pelo usuário
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(dadosAnteriores?.username || "");
   // Guarda o e-mail digitado pelo usuário
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(dadosAnteriores?.email || "");
   // Guarda a senha digitada pelo usuário
-  const [senha, setSenha] = useState("");
+  const [senha, setSenha] = useState(dadosAnteriores?.senha || "");
   // Guarda a confirmação da senha
-  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState(dadosAnteriores?.confirmarSenha || "");
   // Guarda mensagens de erro
   const [mensagem, setMensagem] = useState("");
   // Permite redirecionar o usuário para outra página
   const navigate = useNavigate();
-  // Pega a função de requisição do hook useApi
-  const { request, loading } = useApi()
 
   // Função executada quando o formulário é enviado
-  async function handleSubmit(e) {
+  function handleSubmit(e) {
     // Evita que a página seja recarregada
     e.preventDefault();
     // Limpa mensagens anteriores
     setMensagem("");
+    // Verifica se todos os campos foram preenchidos
+    if (!username || !email || !senha || !confirmarSenha) {
+      setMensagem("Preencha todos os campos");
+      return;
+    }
+
+    // Verifica se a senha possui no mínimo 6 caracteres
+    if (senha.length < 6) {
+      setMensagem("A senha deve ter no mínimo 6 caracteres");
+      return;
+    }
 
     // Verifica se as duas senhas digitadas são iguais
     if (senha !== confirmarSenha) {
@@ -35,27 +45,14 @@ function Register() {
       return;
     }
 
-    // Cria o objeto com os dados que serão enviados para a API
-    const user = {
-      username: username,
-      email: email,
-      senha: senha,
-      senhaComparar: confirmarSenha,
-    };
-
-    try {
-      // Envia os dados do usuário para a API realizar o cadastro
-      await request("/users/cadastro", {
-        method: "POST",
-        body: user,
-      });
-
-      // Se o cadastro der certo, redireciona para a página de login
-      navigate("/login");
-    } catch (err) {
-      // Caso aconteça algum erro, exibe a mensagem
-      setMensagem(err.message);
-    }
+    navigate("/register/termo", {
+      state: {
+        username: username,
+        email: email,
+        senha: senha,
+        senhaComparar : confirmarSenha,
+      }
+    });
   }
 
   return (
@@ -112,8 +109,8 @@ function Register() {
             />
           </div>
           {/* Envia o formulário de cadastro */}
-          <button className="btn" type="submit" disabled={loading}>
-            {loading ? "Cadastrando..." : "Cadastrar"}
+          <button className="btn" type="submit">
+            Continuar
           </button>
         </form>
 

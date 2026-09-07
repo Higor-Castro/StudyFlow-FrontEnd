@@ -1,6 +1,6 @@
 // Imports da pagina
 import { useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useApi from "../../../hooks/useApi";
 
 function RequestReset() {
