@@ -6,7 +6,7 @@ import { useState } from "react";
 import { removeToken } from "../../../utils/auth";
 import useApi from "../../../hooks/useApi";
 
-function ConsentimentoProfile() {
+function ConsentProfile() {
   const VERSAO_TERMO = "1.0";
 
   const navigate = useNavigate();
@@ -103,4 +103,4 @@ function ConsentimentoProfile() {
   );
 }
 
-export default ConsentimentoProfile;
+export default ConsentProfile;

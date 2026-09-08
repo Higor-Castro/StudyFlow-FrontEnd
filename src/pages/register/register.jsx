@@ -45,12 +45,13 @@ function Register() {
       return;
     }
 
+    // Redireciona para a tela do termo de consentimento, passando os dados do cadastro
     navigate("/register/termo", {
       state: {
         username: username,
         email: email,
         senha: senha,
-        senhaComparar : confirmarSenha,
+        confirmarSenha: confirmarSenha,
       }
     });
   }

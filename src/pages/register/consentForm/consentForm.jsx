@@ -5,20 +5,21 @@ import { useState } from "react";
 // Importa o hook responsável pelas requisições para a API
 import useApi from "../../../hooks/useApi";
 
-function TermoConsentimento() {
+function ConsentForm() {
   const VERSAO_TERMO = "1.0";
 
   const location = useLocation();
   const navigate = useNavigate();
   // Para receber os dados da pagina anterior
   const dadosCadastro = location.state;
-  
+  // Guarda se o usuário marcou o checkbox de aceite
   const [aceito, setAceito] = useState(false);
   // Guarda mensagens de erro
   const [mensagem, setMensagem] = useState("");
   // Pega a função de requisição do hook useApi
   const { request, loading } = useApi();
 
+  // Se não tiver os dados do cadastro, manda de volta pra tela de cadastro
   if (!dadosCadastro) {
     return <Navigate to="/register" />;
   }
@@ -27,25 +28,27 @@ function TermoConsentimento() {
   async function handleSubmit(e) {
     e.preventDefault();
     setMensagem("");
-
+    // Caso não aceite o checkbox, não deixa continuar
     if (!aceito) {
       setMensagem("Você precisa aceitar os termos de consentimento");
       return;
     }
-
+    // Cria o objeto com os dados do usuário para cadastrar
     const user = {
       username: dadosCadastro.username,
       email: dadosCadastro.email,
       senha: dadosCadastro.senha,
-      senhaComparar: dadosCadastro.senhaComparar,
+      senhaComparar: dadosCadastro.confirmarSenha,
       aceiteTermos: true,
     };
 
     try {
+      // Faz a requisição para cadastrar o usuário
       await request("/users/cadastro", {
         method: "POST",
         body: user,
       });
+      // Redireciona para a tela de login após o cadastro
       navigate("/login");
     } catch (err) {
       setMensagem(err.message);
@@ -124,4 +127,4 @@ function TermoConsentimento() {
   );
 }
 
-export default TermoConsentimento;
+export default ConsentForm;

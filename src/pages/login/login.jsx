@@ -31,7 +31,12 @@ function Login() {
       // Se o login estiver correto, redireciona para a página de 2FA e também envia o e-mail para a próxima página
       navigate("/login/2fa", { state: { email } });
     } catch (err) {
-      // Caso aconteça algum erro, exibe a mensagem
+      // Se retornar errono consentimento, manda para tela para assinar
+      if (err.message?.toLowerCase().includes("aceitar novamente")) {
+        navigate("/login/termo", { state: { email } });
+        return;
+      }
+      // Caso aconteça algum outro erro, exibe a mensagem
       setMensagem(err.message);
     }
   }
@@ -51,7 +56,6 @@ function Login() {
               placeholder="Digite o e-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              autoComplete="current-password"
             />
           </div>
 
@@ -64,6 +68,7 @@ function Login() {
               placeholder="Digite a senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
+              autoComplete="current-password"
             />
           </div>
 

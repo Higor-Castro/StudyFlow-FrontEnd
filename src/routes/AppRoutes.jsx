@@ -11,6 +11,7 @@ import ConfirmToken from "../pages/login/forgotPassword/ConfirmToken";
 import ResetPassword from "../pages/login/forgotPassword/ResetPassword";
 import ConsentForm from "../pages/register/consentForm/consentForm"
 import ConsentProfile from "../pages/profile/consent/consentProfile"
+import PendingConsent from "../pages/login/pendingConsent/pendingConsent"
 
 // Importa o componente PrivateRoute para proteger as rotas privadas
 import PrivateRoute from "./PrivateRoute"
@@ -41,6 +42,11 @@ const router = createBrowserRouter([
         path: "/login/2fa",
         element: <TwoFA />
     },{
+        // Rota da página de termo de consentimento pendente
+        path: "/login/termo",
+        element: <PendingConsent />
+    },
+    {
         // Rota da página inicial
         path: "/home",
         element: <PrivateRoute><Home /></PrivateRoute>

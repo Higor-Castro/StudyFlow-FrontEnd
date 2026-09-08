@@ -154,7 +154,7 @@ button {
   cursor: pointer;
 }
 
-.form-group-checkbox input[type="checkbox"] {
+.form-group-checkbox input {
   margin-top: 3px;
   width: 16px;
   height: 16px;
@@ -165,7 +165,7 @@ button {
   text-align: center;
   color: #666;
   font-size: 13px;
-  margin-top: -10px;
+  margin-top: 5px;
   margin-bottom: 15px;
 }
 
