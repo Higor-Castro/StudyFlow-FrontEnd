@@ -12,9 +12,11 @@ function TermoConsentimento() {
   const navigate = useNavigate();
   // Para receber os dados da pagina anterior
   const dadosCadastro = location.state;
-
+  
   const [aceito, setAceito] = useState(false);
+  // Guarda mensagens de erro
   const [mensagem, setMensagem] = useState("");
+  // Pega a função de requisição do hook useApi
   const { request, loading } = useApi();
 
   if (!dadosCadastro) {

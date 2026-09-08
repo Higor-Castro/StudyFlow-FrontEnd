@@ -168,3 +168,13 @@ button {
   margin-top: -10px;
   margin-bottom: 15px;
 }
+
+.aviso-revogacao {
+  color: #b91c1c;
+  font-weight: bold;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 15px;
+}

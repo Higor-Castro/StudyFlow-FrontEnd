@@ -33,6 +33,9 @@ function Profile() {
         <button className="btn">Excluir conta</button>
         <br />
         <br />
+        <button className="btn" type="button" onClick={() => navigate("/profile/termo")}>Ver Termo de Consentimento</button>
+        <br />
+        <br />
         <button className="btn" type="button" onClick={() => navigate("/home")}> Voltar para home </button>
         <br /><br />
         <button className="btn btn-sair" type="button" onClick={handleLogout} disabled={loading} >{loading ? "Saindo..." : "Sair"}</button>

@@ -9,7 +9,8 @@ import Profile from "../pages/profile/profile"
 import RequestReset from "../pages/login/forgotPassword/RequestReset";
 import ConfirmToken from "../pages/login/forgotPassword/ConfirmToken";
 import ResetPassword from "../pages/login/forgotPassword/ResetPassword";
-import TermoConsentimento from "../pages/register/termoConsentimento/termoConsentimento"
+import ConsentForm from "../pages/register/consentForm/consentForm"
+import ConsentProfile from "../pages/profile/consent/consentProfile"
 
 // Importa o componente PrivateRoute para proteger as rotas privadas
 import PrivateRoute from "./PrivateRoute"
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
     },{
         // Rota da página de termo de consentimento
         path: "/register/termo",
-        element: <TermoConsentimento />
+        element: <ConsentForm />
     },{
         // Rota da página de verificação em duas etapas
         path: "/login/2fa",
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
         // Rota da página de perfil
         path: "/profile",
         element:<PrivateRoute><Profile /></PrivateRoute>
+    },{
+        // Rota da página do termo de consentimento do perfil
+        path: "/profile/termo",
+        element: <PrivateRoute><ConsentProfile /></PrivateRoute>
     },{
         // Rota da página de solicitação de recuperação de senha
         path: "/forgotPassword",
