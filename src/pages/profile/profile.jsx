@@ -66,6 +66,26 @@ function Profile() {
     }
   }
 
+  async function handleExcluir() {
+    setMensagem("");
+    // Pop-up na tela para confirmar se realmente deseja excluir
+    const confirmar = window.confirm(
+    "Tem certeza que deseja excluir sua conta? Essa ação apaga todos os seus dados e não pode ser desfeita."
+    );
+    if (!confirmar) return;
+    try {
+      await request("/users/deletar", { method: "DELETE" });
+      // Avisa a pessoa antes de sair da tela
+      alert("Conta excluída com sucesso!");
+
+      // Como a conta foi excluída, encerra a sessão
+      removeToken();
+      navigate("/login");
+    } catch (err) {
+      setMensagem(err.message);
+    }
+  }
+
   return (
     <div className="page">
       <div className="card">
@@ -82,14 +102,15 @@ function Profile() {
         <button className="btn" type="button" onClick={handleExportar} disabled={loading}>{loading ? "Exportando..." : "Exportar informações"}</button>
         <br />
         <br />
-        <button className="btn">Excluir conta</button>
-        <br />
-        <br />
         <button className="btn" type="button" onClick={() => navigate("/profile/termo")}>Ver Termo de Consentimento</button>
         <br />
         <br />
         <button className="btn" type="button" onClick={() => navigate("/home")}> Voltar para home </button>
-        <br /><br />
+        <br />
+        <br />
+        <button className="btn btn-sair" type="button" onClick={handleExcluir} disabled={loading}>{loading ? "Excluindo..." : "Excluir conta"}</button>
+        <br />
+        <br />
         <button className="btn btn-sair" type="button" onClick={handleLogout} disabled={loading}>{loading ? "Saindo..." : "Sair"}</button>
       </div>
     </div>
