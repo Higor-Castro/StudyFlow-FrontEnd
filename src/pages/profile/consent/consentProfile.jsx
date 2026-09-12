@@ -49,26 +49,40 @@ function ConsentProfile() {
             <li>E-mail</li>
           </ul>
 
-          <h2>Finalidade</h2>
+          <h2>Finalidade dos dados</h2>
           <ul>
-            <li>Identificação do usuário</li>
-            <li>Comunicação</li>
-            <li>Execução dos serviços oferecidos pelo sistema</li>
+            <li>Nome: identificação do usuário no sistema.</li>
+            <li>E-mail: autenticação, comunicação com o usuário e identificação nos registros de logs.</li>
+            <li>Os dados também são utilizados para a execução dos serviços oferecidos pelo sistema.</li>
           </ul>
 
           <h2>Compartilhamento</h2>
           <p>
-            Dados não serão compartilhados com terceiros, exceto quando
+            Os dados não são compartilhados com terceiros, exceto quando
             exigido por lei.
+          </p>
+
+          <h2>Consentimento</h2>
+          <p>
+            O usuário deve aceitar este termo para concluir o cadastro e
+            utilizar o sistema. O consentimento é registrado com a data e a
+            versão do termo aceita.
           </p>
 
           <h2>Seus direitos</h2>
           <ul>
-            <li>Acessar seus dados</li>
-            <li>Corrigir seus dados</li>
-            <li>Solicitar a eliminação quando aplicável</li>
-            <li>Revogar o consentimento</li>
+            <li>Acessar seus dados.</li>
+            <li>Corrigir seus dados.</li>
+            <li>Exportar seus dados.</li>
+            <li>Solicitar a eliminação dos dados quando aplicável.</li>
+            <li>Revogar o consentimento.</li>
           </ul>
+          <p>
+            As funcionalidades de consulta, exportação, exclusão e revogação
+            estão disponíveis na tela Profile. Ao revogar o consentimento, o
+            usuário perde o acesso ao sistema até que um novo consentimento
+            seja realizado.
+          </p>
         </div>
 
         {/* Aviso sobre a consequência da revogação */}
