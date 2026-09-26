@@ -1,0 +1,497 @@
+@startuml StudyFlow
+
+title StudyFlow - Diagrama de Classes do Backend
+
+top to bottom direction
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam nodesep 25
+skinparam ranksep 45
+skinparam linetype ortho
+skinparam roundcorner 8
+skinparam wrapWidth 180
+skinparam maxMessageSize 180
+
+skinparam class {
+  BorderColor #777777
+  ArrowColor #616161
+  FontColor #222222
+  FontSize 11
+  AttributeFontSize 10
+  StereotypeFontColor #666666
+  StereotypeFontSize 9
+}
+skinparam package {
+  BorderColor #9E9E9E
+  FontStyle bold
+  FontColor #333333
+  FontSize 12
+}
+skinparam interface {
+  BorderColor #777777
+  FontColor #222222
+  StereotypeFontColor #666666
+}
+
+
+' APPLICATION
+package "StudyFlow" #E8EEF7 {
+
+  class StudyFlowApplication <<SpringBootApplication / EnableScheduling>> {
+    + {static} main(String[] args) : void
+  }
+}
+
+' CONTROLLER
+package "controller" #E3F2FD {
+
+  class UserController <<RestController>> {
+    - userService : UserService
+    - twoFAService : TwoFAService
+    - logService : LogService
+    - loginTimeService : LoginTimeService
+    - jwtService : JwtService
+    - redefinirSenhaService : RedefinirSenhaService
+    - consentimentoService : ConsentimentoService
+
+    + UserController(UserService, TwoFAService, LogService, LoginTimeService, JwtService, RedefinirSenhaService, ConsentimentoService)
+    + criarUsuario(@Valid @RequestBody UserCadastroValidation) : String
+    + login(@RequestBody UserCadastroValidation) : String
+    + loginTwoFA(@Valid @RequestBody TwoFAValidation) : Map<String, String>
+    + logout(@RequestHeader("Authorization") String authHeader) : String
+    + solicitarRecuperacao(@RequestBody Map<String, String> body) : String
+    + validarToken(@RequestBody Map<String, String> body) : String
+    + recuperarSenha(@Valid @RequestBody RedefinirSenhaValidation) : String
+    + revogarConsentimento(Authentication) : String
+    + aceitarConsentimento(@RequestBody Map<String, String> body) : String
+    + consultarMeusDados(Authentication) : Map<String, Object>
+    + exportarMeusDados(Authentication) : ResponseEntity<Object>
+    + excluirMeusDados(Authentication) : String
+    + validar() : String
+  }
+
+  class UserAdminController <<RestController>> {
+    + validar() : String
+  }
+}
+together {
+    note left of UserController
+      @RequestMapping("/users")
+      Endpoints:
+      POST /cadastro
+      POST /login
+      POST /login/2fa
+      POST /logout
+      POST /senha/recuperar
+      POST /senha/validar
+      POST /senha/redefinir
+      POST /consentimento/revogar
+      POST /consentimento/aceitar
+      GET  /consultar
+      GET  /exportar
+      DELETE /deletar
+      GET  /validar
+    end note
+
+    note left of UserAdminController
+      @RequestMapping("/admin")
+      GET /teste
+    end note
+}
+' VALIDATION
+package  "validation" #FFF3E0{
+
+  class UserCadastroValidation {
+    - username : String { @NotBlank }
+    - senha : String { @NotBlank, @Size(min=6) }
+    - senhaComparar : String { @NotBlank }
+    - email : String { @NotBlank, @Email }
+    - aceiteTermos : boolean { @AssertTrue }
+
+    + getUsername() : String
+    + setUsername(String username) : void
+    + getSenha() : String
+    + setSenha(String senha) : void
+    + getSenhaComparar() : String
+    + setSenhaComparar(String senhaComparar) : void
+    + getEmail() : String
+    + setEmail(String email) : void
+    + getAceiteTermos() : boolean
+    + setAceiteTermos(boolean aceiteTermos) : void
+  }
+
+  class TwoFAValidation {
+    - email : String { @NotBlank, @Email }
+    - codigo : String { @NotBlank, @Size(min=6, max=6) }
+
+    + getEmail() : String
+    + setEmail(String email) : void
+    + getCodigo() : String
+    + setCodigo(String codigo) : void
+  }
+
+  class RedefinirSenhaValidation {
+    - email : String { @NotBlank, @Email }
+    - senha : String { @NotBlank, @Size(min=6) }
+    - senhaComparar : String { @NotBlank }
+    - token : String { @NotBlank }
+
+    + getEmail() : String
+    + setEmail(String email) : void
+    + getSenha() : String
+    + setSenha(String senha) : void
+    + getSenhaComparar() : String
+    + setSenhaComparar(String senhaComparar) : void
+    + getToken() : String
+    + setToken(String token) : void
+  }
+}
+
+' EXCEPTION
+package "exception" #FFEBEE {
+
+  class RequisicaoInvalidaException <<extends RuntimeException>> {
+    + RequisicaoInvalidaException(String mensagem)
+  }
+
+  class GlobalExceptionHandler <<RestControllerAdvice>> {
+    + tratarErroDeValidacao(MethodArgumentNotValidException ex) : ResponseEntity<Object>
+    + handleGenericException(Exception ex) : ResponseEntity<Object>
+  }
+}
+
+' SERVICE
+package "service" #E8F5E9 {
+
+  class UserService <<Service>> {
+    - userRepository : UserRepository
+    - passwordEncoder : PasswordEncoder
+    - consentimentoService : ConsentimentoService
+
+    + UserService(UserRepository, PasswordEncoder, ConsentimentoService)
+    + salvarUser(UserCadastroValidation userValidation) : void
+    + validarLogin(String email, String senha) : boolean
+    + redefinirSenha(String email, String senha, String confirmaSenha) : void
+    + consultarDados(String email) : Map<String, Object>
+    + excluirDados(String email) : void
+  }
+
+  class TwoFAService <<Service>> {
+    - emailService : EmailService
+    - {static} minutosExpirar : int = 5
+    - codigosPendentes : Map<String, Map>
+
+    + TwoFAService(EmailService)
+    + gerarCodigo(String email) : void
+    + validarCodigo(String email, String codigoDigitado) : boolean
+    + {scheduled} limparCodigosExpirados() : void
+  }
+
+  class LoginTimeService <<Service>> {
+    - {static} tentativasMax : int = 5
+    - {static} bloqueioMinutos : int = 10
+    - logService : LogService
+    - tentativas : Map<String, Integer>
+    - bloqueios : Map<String, LocalDateTime>
+
+    + LoginTimeService(LogService)
+    + estaBloqueado(String email) : boolean
+    + registrarFalhaLogin(String email) : void
+    + retirarBloqueio(String email) : void
+    + {scheduled} limparBloqueiosExpirados() : void
+  }
+
+  class RedefinirSenhaService <<Service>> {
+    - {static} minutosExpirar : int = 5
+    - codigosPendentes : Map<String, Map>
+    - logService : LogService
+    - userService : UserService
+    - userRepository : UserRepository
+    - emailService : EmailService
+
+    + RedefinirSenhaService(LogService, UserService, UserRepository, EmailService)
+    + enviarToken(String email) : void
+    + validarToken(String email, String codigoDigitado) : boolean
+    + validarTokenSalvarSenha(String token, String email, String senha, String confirmaSenha) : void
+    + {scheduled} limparCodigosExpirados() : void
+  }
+
+  class ConsentimentoService <<Service>> {
+    - {static} versaoAtual : String = "1.0"
+    - {static} finalidadePadrao : String = "Autenticacao e funcionamento da plataforma StudyFlow (cadastro, login, seguranca da conta)"
+    - consentimentoRepository : ConsentimentoRepository
+    - logService : LogService
+
+    + ConsentimentoService(ConsentimentoRepository, LogService)
+    + registrarConsentimento(String email) : void
+    + revogarConsentimento(String email) : void
+    + temConsentimentoAtivo(String email) : boolean
+    + buscarConsentimentoAtivo(String email) : Optional<Consentimento>
+    + deletarConsentimento(String email) : void
+  }
+
+  class LogService <<Service>> {
+    - logRepository : LogRepository
+
+    + LogService(LogRepository)
+    + salvarLog(Log log) : void
+    + anonimizarLog(String email) : void
+  }
+
+  class EmailService <<Service>> {
+    - apiKey : String
+    - emailRemetente : String
+    - restTemplate : RestTemplate
+
+    + enviarEmail(String destinatario, String corpo) : void
+  }
+}
+
+' SECURITY
+package "security" #ECEFF1 {
+
+  class SecurityConfig <<Configuration>> {
+    - jwtAuthFilter : JwtAuthFilter
+
+    + SecurityConfig(JwtAuthFilter)
+    + securityFilterChain(HttpSecurity) : SecurityFilterChain
+    + corsConfigurationSource() : CorsConfigurationSource
+    + passwordEncoder() : PasswordEncoder
+  }
+
+  class JwtAuthFilter <<Component / extends OncePerRequestFilter>> {
+    - jwtService : JwtService
+    - userDetailsService : UserDetailsService
+    - tokenInvalidadoRepository : TokenInvalidadoRepository
+
+    + JwtAuthFilter(JwtService, UserDetailsService, TokenInvalidadoRepository)
+    # doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) : void
+    - escreverErro(HttpServletResponse response, String mensagem) : void
+  }
+
+  class JwtService <<Service>> {
+    - chave : SecretKey
+    - tokenInvalidadoRepository : TokenInvalidadoRepository
+    - {static} minutosExpirar : long = 30
+
+    + JwtService(String secret, TokenInvalidadoRepository)
+    + gerarToken(String email) : String
+    + extrairEmail(String token) : String
+    + tokenValido(String token) : boolean
+    + salvarLogout(String token) : void
+    + {scheduled} limparTokensExpirados() : void
+  }
+
+  class CustomUserDetailsService <<Service / implements UserDetailsService>> {
+    - userRepository : UserRepository
+
+    + CustomUserDetailsService(UserRepository)
+    + loadUserByUsername(String email) : UserDetails
+  }
+}
+
+' REPOSITORY
+package "repository" #FFF8E1 {
+
+  interface UserRepository <<Repository / extends JpaRepository<User, Long>>> {
+    + findByEmail(String email) : Optional<User>
+  }
+
+  interface ConsentimentoRepository <<Repository / extends JpaRepository<Consentimento, Long>>> {
+    + findByEmail(String email) : List<Consentimento>
+    + buscarAtivo(String email) : Optional<Consentimento>
+    + deletarPorEmail(String email) : void
+  }
+
+  interface LogRepository <<Repository / extends JpaRepository<Log, Long>>> {
+    + anonimizarPorEmail(String email) : void
+  }
+
+  interface TokenInvalidadoRepository <<Repository / extends JpaRepository<TokenInvalidado, Long>>> {
+    + findByToken(String token) : Optional<TokenInvalidado>
+    + removerExpirados(LocalDateTime agora) : void
+  }
+}
+
+' Repository -> Entity (parametro de tipo do JpaRepository<Entity, Id> proprio do projeto)
+UserRepository ..> User
+ConsentimentoRepository ..> Consentimento
+LogRepository ..> Log
+TokenInvalidadoRepository ..> TokenInvalidado
+
+
+' MODEL
+package "model" #F3E5F5 {
+
+  class User <<Entity>> {
+    - id : long
+    - username : String
+    - password : String
+    - email : String
+    - nivel : String = "USER"
+
+    + User()
+    + User(String username, String password, String email)
+    + getId() : long
+    + getUsername() : String
+    + setUsername(String username) : void
+    + getPassword() : String
+    + setPassword(String password) : void
+    + getEmail() : String
+    + setEmail(String email) : void
+    + getNivel() : String
+    + setNivel(String nivel) : void
+  }
+
+  class Consentimento <<Entity>> {
+    - id : long
+    - email : String
+    - versao : String
+    - finalidade : String
+    - revogado : boolean
+    - dataAceite : LocalDateTime
+    - dataRevogacao : LocalDateTime
+
+    + Consentimento()
+    + Consentimento(String email, String versao, String finalidade, LocalDateTime dataAceite)
+    + getId() : long
+    + getEmail() : String
+    + setEmail(String email) : void
+    + getVersao() : String
+    + setVersao(String versao) : void
+    + getFinalidade() : String
+    + setFinalidade(String finalidade) : void
+    + getRevogado() : boolean
+    + setRevogado(boolean revogado) : void
+    + getDataAceite() : LocalDateTime
+    + setDataAceite(LocalDateTime dataAceite) : void
+    + getDataRevogacao() : LocalDateTime
+    + setDataRevogacao(LocalDateTime dataRevogacao) : void
+  }
+
+  class Log <<Entity>> {
+    - id : long
+    - type : String
+    - email : String
+    - mensagem : String
+    - dateTime : LocalDateTime
+
+    + Log()
+    + Log(String type, String email, String mensagem, LocalDateTime dateTime)
+    + getId() : long
+    + getType() : String
+    + setType(String type) : void
+    + getEmail() : String
+    + setEmail(String email) : void
+    + getMensagem() : String
+    + setMensagem(String mensagem) : void
+    + getDateTime() : LocalDateTime
+    + setDateTime(LocalDateTime dateTime) : void
+  }
+
+  class TokenInvalidado <<Entity>> {
+    - id : Long
+    - token : String
+    - dataExpiracao : LocalDateTime
+
+    + TokenInvalidado()
+    + TokenInvalidado(String token, LocalDateTime dataExpiracao)
+    + getId() : Long
+    + getToken() : String
+    + setToken(String token) : void
+    + getDataExpiracao() : LocalDateTime
+    + setDataExpiracao(LocalDateTime dataExpiracao) : void
+  }
+}
+
+
+' Controller -> services (proprios do projeto)
+UserController --> UserService
+UserController --> TwoFAService
+UserController --> LogService
+UserController --> LoginTimeService
+UserController --> JwtService
+UserController --> RedefinirSenhaService
+UserController --> ConsentimentoService
+
+' Controller -> tipos de requisicao/validacao/modelo (proprios do projeto)
+UserController ..> UserCadastroValidation
+UserController ..> TwoFAValidation
+UserController ..> RedefinirSenhaValidation
+UserController ..> Log
+UserController ..> RequisicaoInvalidaException
+
+' Validation DTOs -> sem associacao de dominio; as restricoes sao mostradas nos atributos
+
+' Services -> services/repositories/models (proprios do projeto)
+UserService --> UserRepository
+UserService --> ConsentimentoService
+UserService ..> UserCadastroValidation
+UserService ..> User
+UserService ..> Consentimento
+UserService ..> RequisicaoInvalidaException
+
+TwoFAService --> EmailService
+
+LoginTimeService --> LogService
+LoginTimeService ..> Log
+LoginTimeService ..> RequisicaoInvalidaException
+
+RedefinirSenhaService --> LogService
+RedefinirSenhaService --> UserService
+RedefinirSenhaService --> UserRepository
+RedefinirSenhaService --> EmailService
+RedefinirSenhaService ..> Log
+RedefinirSenhaService ..> RequisicaoInvalidaException
+
+ConsentimentoService --> ConsentimentoRepository
+ConsentimentoService --> LogService
+ConsentimentoService ..> Consentimento
+ConsentimentoService ..> Log
+ConsentimentoService ..> RequisicaoInvalidaException
+
+LogService --> LogRepository
+LogService ..> Log
+
+EmailService ..> RequisicaoInvalidaException
+
+' Security (proprios do projeto)
+SecurityConfig --> JwtAuthFilter
+
+JwtAuthFilter --> JwtService
+JwtAuthFilter --> TokenInvalidadoRepository
+JwtAuthFilter ..> TokenInvalidado
+
+JwtService --> TokenInvalidadoRepository
+JwtService ..> TokenInvalidado
+
+CustomUserDetailsService --> UserRepository
+CustomUserDetailsService ..> User
+
+' Exceptions (proprios do projeto)
+GlobalExceptionHandler ..> RequisicaoInvalidaException
+
+
+' LIGACOES APENAS PARA LAYOUT — SEM SIGNIFICADO SEMANTICO
+StudyFlowApplication -[hidden]right-> UserController
+UserController -[hidden]right-> UserService
+UserService -[hidden]right-> UserRepository
+SecurityConfig -[hidden]down-> JwtAuthFilter
+JwtAuthFilter -[hidden]right-> JwtService
+ConsentimentoService -[hidden]right-> ConsentimentoRepository
+LogService -[hidden]right-> LogRepository
+UserCadastroValidation -[hidden]right-> UserController
+GlobalExceptionHandler -[hidden]right-> RequisicaoInvalidaException
+
+legend bottom
+  |= Relação |= Significado |
+  | --> | associação/dependência estrutural por atributo injetado |
+  | ..> | dependência de uso, parâmetro, retorno ou criação |
+  | <<extends X>> / <<implements X>> | herança/implementação de tipo externo ao projeto (Spring, JJWT etc.), indicada no estereótipo da própria classe para manter o diagrama focado no código do projeto |
+  | -[hidden]-> | somente posicionamento visual; não representa relação do domínio |
+
+endlegend
+
+@enduml
+
