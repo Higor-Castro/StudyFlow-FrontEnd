@@ -31,7 +31,7 @@ O objetivo do StudyFlow é proporcionar aos estudantes uma ferramenta que facili
  
 - React Router DOM - Version: 7.18.2
  
-- Axios - Version: 1.19.0
+- Axios - Version: 1.20.0
  
 - React Icons - Version: 5.7.0
 
