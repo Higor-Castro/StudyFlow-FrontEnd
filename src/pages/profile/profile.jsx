@@ -96,9 +96,6 @@ function Profile() {
 
         {mensagem && <p>{mensagem}</p>}
 
-        <button className="btn">Redefinir Senha</button>
-        <br />
-        <br />
         <button className="btn" type="button" onClick={handleExportar} disabled={loading}>{loading ? "Exportando..." : "Exportar informações"}</button>
         <br />
         <br />

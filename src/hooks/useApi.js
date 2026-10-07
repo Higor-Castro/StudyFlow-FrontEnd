@@ -9,6 +9,20 @@ import { getToken, removeToken } from "../utils/auth";
 // Pega a URL base da API definida no arquivo .env
 const BASE_URL = import.meta.env.VITE_API_URL
 
+// Evita mostrar o alerta de sessão expirada mais de uma vez
+let sessaoExpiradaTratada = false;
+
+// Rotas públicas: não enviam token (um token vencido causaria erro 401)
+const ROTAS_PUBLICAS = [
+  "/users/login",
+  "/users/cadastro",
+  "/users/login/2fa",
+  "/users/senha/recuperar",
+  "/users/senha/validar",
+  "/users/senha/redefinir",
+  "/users/consentimento/aceitar",
+];
+
 //Criação da função useApi, que será usada para fazer requisições para a API
 function useApi() {
   // Controla se uma requisição está sendo realizada
@@ -27,7 +41,7 @@ function useApi() {
       // Configura a requisição:
       // Junta a URL base com o endpoint recebido
       // Define o método HTTP caso nenhum seja informado utiliza GET
-      const token = getToken();
+      const token = ROTAS_PUBLICAS.includes(endpoint) ? null : getToken();
       const response = await axios({
         url: `${BASE_URL}${endpoint}`,
         method: options.method || "GET",
@@ -38,7 +52,8 @@ function useApi() {
       return response.data;
     } catch (err) {
       // Se da erro, volta para tela de login, invalidação de sessão
-      if (err.response?.status === 401) {
+      if (err.response?.status === 401 && !sessaoExpiradaTratada) {
+        sessaoExpiradaTratada = true;
         removeToken();
         alert("Sua sessão expirou. Faça login novamente.");
         window.location.href = "/login";
