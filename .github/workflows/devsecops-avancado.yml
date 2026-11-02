@@ -1,0 +1,78 @@
+# DevSecOps Avançado – StudyFlow (front-end)
+#   Job 1: Privacidade  -> Bearer (PII / dados sensíveis no código JavaScript)
+#   Job 2: Supply chain -> Trivy  (SBOM CycloneDX do package-lock.json)
+name: DevSecOps Avançado
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  privacidade-bearer:
+    name: Privacidade - Bearer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Bearer - scan de privacidade e dados sensíveis
+        uses: bearer/bearer-action@v2
+        with:
+          path: .
+          scanner: sast,secrets
+          severity: critical,high      # só falhas críticas/altas bloqueiam
+          skip-path: 'Docs/*,node_modules/*'
+          format: json
+          output: bearer-relatorio.json
+          exit-code: 1                 # BLOQUEIA o build se achar falhas
+
+      - name: Guardar relatório do Bearer
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bearer-relatorio
+          path: bearer-relatorio.json
+          if-no-files-found: ignore
+
+  sbom-trivy:
+    name: SBOM - Trivy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      # Versão fixa + SHA256: as tags do trivy-action foram comprometidas
+      # em 2026 (ataque de supply chain).
+      - name: Instalar Trivy v0.69.3 (versão fixa + checagem SHA256)
+        run: |
+          curl -sSL -o trivy.tgz https://github.com/aquasecurity/trivy/releases/download/v0.69.3/trivy_0.69.3_Linux-64bit.tar.gz
+          echo "1816b632dfe529869c740c0913e36bd1629cb7688bd5634f4a858c1d57c88b75  trivy.tgz" | sha256sum -c -
+          tar xzf trivy.tgz trivy
+          sudo mv trivy /usr/local/bin/trivy
+          trivy --version
+
+      - name: Gerar SBOM (CycloneDX)
+        run: trivy fs --format cyclonedx --output sbom.json .
+
+      - name: Conferir o SBOM e resumir
+        run: |
+          jq -e '.bomFormat == "CycloneDX"' sbom.json
+          total=$(jq '.components | length' sbom.json)
+          echo "Componentes no SBOM: $total"
+          {
+            echo "### SBOM gerado (CycloneDX)"
+            echo "Total de componentes: **$total**"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publicar SBOM como artefato baixável
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: sbom.json
+          retention-days: 90
