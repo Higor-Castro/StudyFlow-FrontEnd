@@ -1,0 +1,195 @@
+# DevSecOps Pipeline – StudyFlow (front-end: React / Vite / npm)
+#
+#   Job 1  Secrets  -> TruffleHog  (segredos no histórico completo do Git)
+#   Job 2  SCA      -> Trivy       (CVEs em dependências npm (package-lock.json))
+#   Job 3  SAST     -> Semgrep OSS (análise estática do código JavaScript/React; bloqueia o build)
+#   Bônus  SAST     -> CodeQL      (repositório público; alertas no painel Security)
+#   Job 4  Gate     -> consolida os 3 jobs num único status obrigatório para o merge
+#
+# Política de bloqueio: qualquer achado ALTO/CRÍTICO derruba o job (exit code != 0),
+# o "Security Gate" fica vermelho e o merge na main é impedido
+# (Settings > Branches > Require status checks > "Security Gate").
+name: DevSecOps Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Menor privilégio: nenhum job escreve no repositório.
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # JOB 1: Varredura de segredos (TruffleHog)
+  # fetch-depth: 0 baixa TODO o histórico; um segredo apagado num commit antigo
+  # continua exposto no Git e precisa ser encontrado.
+  # ---------------------------------------------------------------------------
+  secrets-trufflehog:
+    name: Secrets - TruffleHog
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TRUFFLEHOG_VERSION: '3.88.0'
+    steps:
+      - name: Baixar o código com todo o histórico
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Instalar TruffleHog (versão fixa + checksum oficial da release)
+        run: |
+          base="https://github.com/trufflesecurity/trufflehog/releases/download/v${TRUFFLEHOG_VERSION}"
+          curl -sSfL -o trufflehog.tgz  "${base}/trufflehog_${TRUFFLEHOG_VERSION}_linux_amd64.tar.gz"
+          curl -sSfL -o checksums.txt   "${base}/trufflehog_${TRUFFLEHOG_VERSION}_checksums.txt"
+          expected=$(grep 'linux_amd64.tar.gz' checksums.txt | awk '{print $1}')
+          echo "${expected}  trufflehog.tgz" | sha256sum -c -
+          tar xzf trufflehog.tgz trufflehog
+          sudo mv trufflehog /usr/local/bin/trufflehog
+          trufflehog --version
+
+      - name: Escanear o histórico do Git (bloqueia se achar segredo)
+        # --fail: sai com código 183 se houver QUALQUER segredo (verificado ou não).
+        # --no-update: não tenta se autoatualizar dentro do CI.
+        run: trufflehog git "file://${GITHUB_WORKSPACE}" --fail --no-update
+
+  # ---------------------------------------------------------------------------
+  # JOB 2: SCA - dependências vulneráveis (Trivy)
+  # ---------------------------------------------------------------------------
+  sca-trivy:
+    name: SCA - Trivy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      # Versão fixa + SHA256: as tags do trivy-action foram comprometidas em 2026,
+      # por isso o binário é instalado direto e validado.
+      - name: Instalar Trivy v0.69.3 com validação de integridade
+        run: |
+          curl -sSL -o trivy.tgz https://github.com/aquasecurity/trivy/releases/download/v0.69.3/trivy_0.69.3_Linux-64bit.tar.gz
+          echo "1816b632dfe529869c740c0913e36bd1629cb7688bd5634f4a858c1d57c88b75  trivy.tgz" | sha256sum -c -
+          tar xzf trivy.tgz trivy
+          sudo mv trivy /usr/local/bin/trivy
+          trivy --version
+
+      - name: Gerar relatório completo (JSON, não bloqueia)
+        run: |
+          trivy fs --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed \
+            --skip-dirs Docs,node_modules --format json --output trivy-sca.json .
+
+      - name: Bloquear se houver CVE ALTA ou CRÍTICA
+        # exit-code 1: o job falha. --ignore-unfixed ignora CVEs sem correção
+        # publicada (não há o que atualizar); remova a flag para ser mais rígido.
+        run: |
+          trivy fs --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed \
+            --skip-dirs Docs,node_modules --format table --exit-code 1 .
+
+      - name: Guardar relatório do Trivy
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-sca-relatorio
+          path: trivy-sca.json
+          if-no-files-found: ignore
+
+  # ---------------------------------------------------------------------------
+  # JOB 3: SAST (Semgrep open-source; é ele que aplica o exit-code de bloqueio)
+  # Severidade do Semgrep: ERROR = alta/crítica, WARNING = média, INFO = baixa.
+  # --severity ERROR --error: só ERROR é analisado e qualquer achado falha o job.
+  # ---------------------------------------------------------------------------
+  sast-semgrep:
+    name: SAST - Semgrep
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar Semgrep OSS
+        run: pip install "semgrep>=1.100,<2" && semgrep --version
+
+      - name: Gerar relatório SARIF (não bloqueia)
+        run: |
+          semgrep scan --metrics=off \
+            --config p/default --config p/javascript --config p/react --config p/owasp-top-ten \
+            --exclude Docs --exclude node_modules --exclude dist \
+            --sarif --output semgrep.sarif || true
+
+      - name: Bloquear se houver achado de severidade ALTA/CRÍTICA
+        run: |
+          semgrep scan --metrics=off \
+            --config p/default --config p/javascript --config p/react --config p/owasp-top-ten \
+            --exclude Docs --exclude node_modules --exclude dist \
+            --severity ERROR --error
+
+      - name: Guardar relatório do Semgrep
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-relatorio
+          path: semgrep.sarif
+          if-no-files-found: ignore
+
+  # ---------------------------------------------------------------------------
+  # BÔNUS: CodeQL (nativo do GitHub, grátis em repositório público)
+  # Não bloqueia por exit-code: publica os alertas em Security > Code scanning
+  # (evidência para o relatório). Fica fora do Gate para que uma falha de
+  # suporte da ferramenta não trave o merge.
+  # ---------------------------------------------------------------------------
+  sast-codeql:
+    name: SAST (bônus) - CodeQL
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Inicializar CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          queries: security-extended
+
+      - name: Analisar
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:javascript-typescript
+
+  # ---------------------------------------------------------------------------
+  # JOB 4: Security Gate - o status que a branch protection exige para o merge
+  # ---------------------------------------------------------------------------
+  security-gate:
+    name: Security Gate
+    needs: [secrets-trufflehog, sca-trivy, sast-semgrep]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Todos os jobs de segurança precisam ter passado
+        env:
+          SECRETS: ${{ needs.secrets-trufflehog.result }}
+          SCA: ${{ needs.sca-trivy.result }}
+          SAST: ${{ needs.sast-semgrep.result }}
+        run: |
+          echo "Secrets (TruffleHog): $SECRETS"
+          echo "SCA (Trivy):          $SCA"
+          echo "SAST (Semgrep):       $SAST"
+          if [ "$SECRETS" != "success" ] || [ "$SCA" != "success" ] || [ "$SAST" != "success" ]; then
+            echo "::error::Falha de segurança ALTA/CRÍTICA detectada. Merge bloqueado."
+            exit 1
+          fi
+          echo "Pipeline de segurança aprovado."
