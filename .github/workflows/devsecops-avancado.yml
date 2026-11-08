@@ -34,7 +34,7 @@ jobs:
 
       - name: Guardar relatório do Bearer
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: bearer-relatorio
           path: bearer-relatorio.json
@@ -71,7 +71,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publicar SBOM como artefato baixável
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sbom-cyclonedx
           path: sbom.json
