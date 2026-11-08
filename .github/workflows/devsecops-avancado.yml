@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Baixar o código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Bearer - scan de privacidade e dados sensíveis
         uses: bearer/bearer-action@v2
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Baixar o código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Versão fixa + SHA256: as tags do trivy-action foram comprometidas
       # em 2026 (ataque de supply chain).
