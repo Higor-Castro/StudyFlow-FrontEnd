@@ -33,7 +33,7 @@ function Login() {
     } catch (err) {
       // Se retornar errono consentimento, manda para tela para assinar
       if (err.message?.toLowerCase().includes("aceitar novamente")) {
-        navigate("/login/termo", { state: { email } });
+        navigate("/login/termo", { state: { email, senha } });
         return;
       }
       // Caso aconteça algum outro erro, exibe a mensagem

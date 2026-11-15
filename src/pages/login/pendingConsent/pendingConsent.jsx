@@ -13,13 +13,15 @@ function PendingConsent() {
   const email = location.state?.email;
   // Guarda se o usuário marcou o checkbox de aceite
   const [aceito, setAceito] = useState(false);
+  //Armazenar senha
+  const senha = location.state?.senha;
   // Guarda mensagens de erro
   const [mensagem, setMensagem] = useState("");
   // Pega a função de requisição do hook useApi
   const { request, loading } = useApi();
 
-  // Se não tiver e-mail, manda de volta pra o login
-  if (!email) {
+  // Se não tiver e-mail ou senha, manda de volta pra o login
+  if (!email || !senha) {
     return <Navigate to="/login" />;
   }
 
@@ -38,7 +40,7 @@ function PendingConsent() {
       // Faz a requisição para aceitar o termo de consentimento
       await request("/users/consentimento/aceitar", {
         method: "POST",
-        body: { email },
+        body: { email, senha },
       });
       // Volta para o login para a pessoa entrar normalmente
       navigate("/login");
